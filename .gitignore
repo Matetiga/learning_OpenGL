@@ -1,0 +1,35 @@
+# Compiled object files
+*.obj
+*.o
+
+# Executables and build outputs
+*.exe
+*.pdb
+*.ilk
+
+# Build directories
+Debug/
+x64/
+bin/
+obj/
+build/
+
+# Visual Studio specific
+*.suo
+*.sdf
+*.opensdf
+*.db
+*.vcxproj.user
+.vscode/
+.vs/
+
+# External dependencies (GLFW, GLEW)
+Dependencies/
+
+# Temporary files
+*.swp
+*~
+
+# Windows specific
+Thumbs.db
+desktop.ini

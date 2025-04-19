@@ -119,6 +119,11 @@ int main(void)
     if (!glfwInit())
         return -1;
 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+
 
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
@@ -130,7 +135,7 @@ int main(void)
 
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(0);
+    glfwSwapInterval(1); // the buffer swap occurs only once per monitor refresh cycle
 
     // this must be called after a creating a valid OpenGL context
     if (glewInit() != GLEW_OK) {
@@ -159,13 +164,19 @@ int main(void)
      this means the sequence of lines of code play an immense role
      some actions can only be executed if a previous line was called
     */
+
+    unsigned int vao;
+    GLCall(glGenVertexArrays(1, &vao));
+    GLCall(glBindVertexArray(vao));
+
     unsigned int buffer;
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer); // binds a buffer object to the specified buffer binding point
     glBufferData(GL_ARRAY_BUFFER, 4 *2* sizeof(float), position, GL_STATIC_DRAW); // size will be in bytes (that is why is multiplied by float)
 
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+    glEnableVertexAttribArray(0); // enables vertex attribute at index 0
+    // OpenGL links the currently bound VBO (buffer) to the vertex attribute (index 0) in the currently bound VAO (vao).
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0); // the first value (index) matches with the enabled vertex
 
     unsigned int ibo; // index Buffer Object 
     glGenBuffers(1, &ibo);
@@ -188,7 +199,11 @@ int main(void)
     ASSERT(location != -1); // if location is not found
     glUniform4f(location, 0.3, 0.5, 1, 0.8); // For the Uniform u_Color we need a vector with 4 floats
 
-
+    // unbind the buffers
+    GLCall(glBindVertexArray(0));
+    GLCall(glUseProgram(0));
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
+    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 
     float red = 0.0f;
     float increment = 0.05f;
@@ -198,9 +213,14 @@ int main(void)
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
-        
-        GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+        GLCall(glUseProgram(shader));
         GLCall(glUniform4f(location, red, 0.5, 1, 0.8));
+
+        // we are just binding the index array buffer and the vertex array object and NOT the position's buffer (vertex buffer)
+        GLCall(glBindVertexArray(vao));
+        GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
+
+        GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 
         if (red > 1.0f)
             increment = -0.05f;

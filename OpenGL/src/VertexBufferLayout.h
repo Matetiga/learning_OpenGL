@@ -60,7 +60,6 @@ public:
 			VertexBufferElement::GetSizeOfType(GL_UNSIGNED_BYTE);
 	}
 
-	// returning Address of the vector
-	inline const std::vector<VertexBufferElement>& GetElements() const { return m_Elements; }
+	inline const std::vector<VertexBufferElement> GetElements() const& { return m_Elements; }
 	inline unsigned int GetStride() const { return m_Stride; }
 };

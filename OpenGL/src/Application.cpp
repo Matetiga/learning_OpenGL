@@ -5,6 +5,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <chrono>
 
 #include "Renderer.h"
 
@@ -189,6 +190,11 @@ int main(void)
 
         float red = 0.0f;
         float increment = 0.05f;
+
+        
+        float delta_time = 0.16666f;
+        auto start = std::chrono::high_resolution_clock::now();       
+
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
@@ -210,13 +216,17 @@ int main(void)
             else if (red < 0.0f)
                 increment = 0.05f;
 
-            red += increment;
+            red += increment * delta_time * 10;
 
             /* Swap front and back buffers */
             glfwSwapBuffers(window);
 
             /* Poll for and process events */
             glfwPollEvents();
+            
+            auto end = std::chrono::high_resolution_clock::now();
+            delta_time = std::chrono::duration<float>(end - start).count();
+            start = end;
         }
 
         glDeleteProgram(shader);

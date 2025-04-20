@@ -10,6 +10,7 @@
 
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "VertexArray.h"
 
 struct ShaderProgramSource
 {
@@ -154,13 +155,12 @@ int main(void)
         GLCall(glGenVertexArrays(1, &vao));
         GLCall(glBindVertexArray(vao));
 
-
+        VertexArray va;
         VertexBuffer vb(position, 4 * 2 * sizeof(float));
 
-
-        glEnableVertexAttribArray(0); // enables vertex attribute at index 0
-        // OpenGL links the currently bound VBO (buffer) to the vertex attribute (index 0) in the currently bound VAO (vao).
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0); // the first value (index) matches with the enabled vertex
+        VertexBufferLayout layout;
+        layout.Push<float>(2);
+        va.AddBuffer(vb, layout);
 
         IndexBuffer ib(indices, 6);
 
@@ -199,7 +199,8 @@ int main(void)
             GLCall(glUniform4f(location, red, 0.5, 1, 0.8));
 
             // we are just binding the index array buffer and the vertex array object and NOT the position's buffer (vertex buffer)
-            GLCall(glBindVertexArray(vao));
+            //GLCall(glBindVertexArray(vao));
+            va.Bind();
             ib.Bind();
 
             GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));

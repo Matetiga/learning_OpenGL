@@ -13,6 +13,7 @@
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "VertexBufferLayout.h"
+#include "Texture.h"
 
 #include "Shader.h"
 
@@ -52,10 +53,11 @@ int main(void)
 
     {
         float position[] = {
-            -0.5f, -0.5f, // bottom left   --- 0 
-            0.5f, -0.5f, // bottom rigth   --- 1
-            0.5f, 0.5f,// top right        --- 2
-            -0.5f, 0.5f, // top left       --- 3
+            // the last two values of each row are the texture coordinate
+            -0.5f, -0.5f, 0.0f, 0.0f, // bottom left   --- 0 
+            0.5f, -0.5f, 1.0f, 0.0f, // bottom rigth   --- 1
+            0.5f, 0.5f, 1.0f, 1.0f,// top right        --- 2
+            -0.5f, 0.5f, 0.0f, 1.0f, // top left       --- 3
         };
 
         // Index Buffer -> to avoid re rendering the same vertex twice
@@ -70,14 +72,14 @@ int main(void)
          some actions can only be executed if a previous line was called
         */
 
-        unsigned int vao;
-        GLCall(glGenVertexArrays(1, &vao));
-        GLCall(glBindVertexArray(vao));
-
+        GLCall(glEnable(GL_BLEND));
+        GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+        
         VertexArray va;
-        VertexBuffer vb(position, 4 * 2 * sizeof(float));
+        VertexBuffer vb(position, 4 * 4 * sizeof(float));
 
         VertexBufferLayout layout;
+        layout.Push<float>(2);
         layout.Push<float>(2);
         va.AddBuffer(vb, layout);
 
@@ -87,6 +89,11 @@ int main(void)
         Shader shader("res/shaders/Basic.shader");
         shader.Bind();
         shader.SetUniform4f("u_Color", 0.3, 0.5, 1, 0.8);
+
+
+        Texture texture("res/textures/sol.png");
+        texture.Bind(0); // this must match with the texture slot
+        shader.SetUniform1i("u_Texture", 0); // Texture is bound to slot 0
 
         // unbind the buffers
         va.Unbind();
@@ -108,7 +115,7 @@ int main(void)
         while (!glfwWindowShouldClose(window))
         {
             /* Render here */
-            glClear(GL_COLOR_BUFFER_BIT);
+            renderer.Clear();
 
             shader.Bind();
             shader.SetUniform4f("u_Color", red, 0.5, 1, 0.8);

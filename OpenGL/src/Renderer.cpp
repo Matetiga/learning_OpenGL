@@ -15,3 +15,14 @@ bool GLLogCall(const char* function, const char* file, int line)
     }
     return true;
 }
+
+void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader)
+{
+    shader.Bind();
+    // we are just binding the index array buffer and the vertex array object and NOT the position's buffer (vertex buffer)
+    //GLCall(glBindVertexArray(vao));
+    va.Bind();
+    ib.Bind();
+    GLCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr));
+
+}

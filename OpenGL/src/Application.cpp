@@ -12,6 +12,7 @@
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
+#include "VertexBufferLayout.h"
 
 #include "Shader.h"
 
@@ -97,6 +98,8 @@ int main(void)
         float red = 0.0f;
         float increment = 0.05f;
 
+        Renderer renderer;
+
         // Delta Time
         float delta_time = 0.16666f;
         auto start = std::chrono::high_resolution_clock::now();       
@@ -109,15 +112,8 @@ int main(void)
 
             shader.Bind();
             shader.SetUniform4f("u_Color", red, 0.5, 1, 0.8);
-            
-
-            // we are just binding the index array buffer and the vertex array object and NOT the position's buffer (vertex buffer)
-            //GLCall(glBindVertexArray(vao));
-            va.Bind();
-            ib.Bind();
-
-
-            GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+ 
+            renderer.Draw(va, ib, shader);
 
             if (red > 1.0f)
                 increment = -0.05f;

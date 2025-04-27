@@ -17,6 +17,10 @@
 
 #include "Shader.h"
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
+
 int main(void)
 {
     GLFWwindow* window;
@@ -72,7 +76,11 @@ int main(void)
          some actions can only be executed if a previous line was called
         */
 
+        // Blending 
         GLCall(glEnable(GL_BLEND));
+        // glBlendFunc(src, dest) will specify the values with the src and destination's RGBA will be multiplied 
+        // GL_SRC_ALPHA will be = 0, if the pixel should be transluscent (for png images)
+        // dest 'GL_ONE_MINUS_SRC_ALPHA' 
         GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
         
         VertexArray va;
@@ -85,13 +93,17 @@ int main(void)
 
         IndexBuffer ib(indices, 6);
 
+        // the four first values give the position of the window itself (to put the edges into coordinates)
+        glm::mat4 proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+
 
         Shader shader("res/shaders/Basic.shader");
         shader.Bind();
         shader.SetUniform4f("u_Color", 0.3, 0.5, 1, 0.8);
+        shader.SetUniformMat4("u_MVP", proj);
 
 
-        Texture texture("res/textures/sol.png");
+        Texture texture("res/textures/nerd.png");
         texture.Bind(0); // this must match with the texture slot
         shader.SetUniform1i("u_Texture", 0); // Texture is bound to slot 0
 

@@ -24,9 +24,11 @@ const void Renderer::Clear()
 void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader)
 {
     shader.Bind();
-    // we are just binding the index array buffer and the vertex array object and NOT the position's buffer (vertex buffer)
-    //GLCall(glBindVertexArray(vao));
+    // we are just binding the index array buffer and the vertex array object and NOT the position's buffer (VertexBuffer)
+    // Vertex Array contains Information about the VertexBuffer and it's layout (position of the vertices and how to read them 
+    // and texture coordinates)
     va.Bind();
+    // Contains the Index of each Vertex and how to assemble everything together
     ib.Bind();
     GLCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr));
 

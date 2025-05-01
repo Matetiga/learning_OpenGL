@@ -62,10 +62,10 @@ int main(void)
         float position[] = {
             // the last two values of each row are the texture coordinate (values of 0 to 1.0) 
             // so each corner of the image is directly bound to each corner of the rect
-            400.0f, 200.0f, 0.0f, 0.0f, // bottom left   --- 0 
-            500.0f, 200.0f, 1.0f, 0.0f, // bottom rigth   --- 1
-            500.0f, 300.0f, 1.0f, 1.0f,// top right        --- 2
-            400.0f, 300.0f, 0.0f, 1.0f, // top left       --- 3
+            -50.0f, -50.0f, 0.0f, 0.0f, // bottom left   --- 0 
+            50.0f, -50.0f, 1.0f, 0.0f, // bottom rigth   --- 1
+            50.0f, 50.0f, 1.0f, 1.0f,// top right        --- 2
+           -50.0f, 50.0f, 0.0f, 1.0f, // top left       --- 3
         };
 
         // Index Buffer -> to avoid re rendering the same vertex twice
@@ -102,7 +102,7 @@ int main(void)
         // bottom left (0, 0)
         // top rigth (960, 540)
         glm::mat4 proj = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
-        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-100, 0, 0));
+        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
         
 
         Shader shader("res/shaders/Basic.shader");
@@ -150,7 +150,8 @@ int main(void)
         bool show_another_window = false;
         ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
         
-        glm::vec3 translation(200, 200, 0);
+        glm::vec3 translationA(200, 200, 0);
+        glm::vec3 translationB(500, 200, 0);
 
         // Delta Time
         float delta_time = 0.16666f;
@@ -166,17 +167,22 @@ int main(void)
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
 
-
-            glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
-            glm::mat4 mvp = proj * view * model;
-
             
-
-            shader.Bind();
-            shader.SetUniform4f("u_Color", red, 0.5, 1, 0.8);
-            shader.SetUniformMat4("u_MVP", mvp);
- 
-            renderer.Draw(va, ib, shader);
+            // Uniforms must be bound to the right shader
+            {
+                glm::mat4 model = glm::translate(glm::mat4(1.0f), translationA);
+                glm::mat4 mvp = proj * view * model;
+                shader.Bind();
+                shader.SetUniformMat4("u_MVP", mvp);
+                renderer.Draw(va, ib, shader);
+            }
+            {
+                glm::mat4 model = glm::translate(glm::mat4(1.0f), translationB);
+                glm::mat4 mvp = proj * view * model;
+                shader.Bind();
+                shader.SetUniformMat4("u_MVP", mvp);
+                renderer.Draw(va, ib, shader);
+            }
 
             if (red > 1.0f)
                 increment = -0.05f;
@@ -195,7 +201,8 @@ int main(void)
                 ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
                 ImGui::Checkbox("Another Window", &show_another_window);
 
-                ImGui::SliderFloat3("Translation", &translation.x, 0.0f, 960.0f);
+                ImGui::SliderFloat3("TranslationA", &translationA.x, 0.0f, 960.0f);
+                ImGui::SliderFloat3("TranslationB", &translationB.x, 0.0f, 960.0f);
                 ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
                 if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)

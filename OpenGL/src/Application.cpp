@@ -22,7 +22,7 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
-
+#include "tests/TestClearColor.h"
 
 int main(void)
 {
@@ -86,44 +86,6 @@ int main(void)
         // GL_SRC_ALPHA will be = 0, if the pixel should be transluscent (for png images)
         // dest 'GL_ONE_MINUS_SRC_ALPHA' 
         GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-        
-        VertexArray va;
-        VertexBuffer vb(position, 4 * 4 * sizeof(float));
-
-        VertexBufferLayout layout;
-        layout.Push<float>(2);
-        // for the texture coordinates
-        layout.Push<float>(2);
-        va.AddBuffer(vb, layout);
-
-        IndexBuffer ib(indices, 6);
-
-        // the four first values give the position of the window itself (to put the edges into coordinates) 
-        // bottom left (0, 0)
-        // top rigth (960, 540)
-        glm::mat4 proj = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
-        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
-        
-
-        Shader shader("res/shaders/Basic.shader");
-        shader.Bind();
-        shader.SetUniform4f("u_Color", 0.3, 0.5, 1, 0.8);
-
-
-
-        Texture texture("res/textures/nerd.png");
-        texture.Bind(0); // this must match with the texture slot
-        shader.SetUniform1i("u_Texture", 0); // Texture is bound to slot 0
-
-        // unbind the buffers
-        va.Unbind();
-        shader.Unbind();        
-        vb.Unbind();
-        ib.Unbind();
-        
-        // Color of the form
-        float red = 0.0f;
-        float increment = 0.05f;
 
         Renderer renderer;
 
@@ -146,12 +108,11 @@ int main(void)
 
         ImGui_ImplGlfw_InitForOpenGL(window, true);          // Second param install_callback=true will install GLFW callbacks and chain to existing ones.
         ImGui_ImplOpenGL3_Init(glsl_version);
-        bool show_demo_window = true;
-        bool show_another_window = false;
+        bool show_demo_window = true;        
         ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
         
-        glm::vec3 translationA(200, 200, 0);
-        glm::vec3 translationB(500, 200, 0);
+
+        test::TestClearColor test;
 
         // Delta Time
         float delta_time = 0.16666f;
@@ -163,56 +124,14 @@ int main(void)
             /* Render here */
             renderer.Clear();
 
+            test.OnUpdate(0.0f);
+            test.OnRender();         
+
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
 
-            
-            // Uniforms must be bound to the right shader
-            {
-                glm::mat4 model = glm::translate(glm::mat4(1.0f), translationA);
-                glm::mat4 mvp = proj * view * model;
-                shader.Bind();
-                shader.SetUniformMat4("u_MVP", mvp);
-                renderer.Draw(va, ib, shader);
-            }
-            {
-                glm::mat4 model = glm::translate(glm::mat4(1.0f), translationB);
-                glm::mat4 mvp = proj * view * model;
-                shader.Bind();
-                shader.SetUniformMat4("u_MVP", mvp);
-                renderer.Draw(va, ib, shader);
-            }
-
-            if (red > 1.0f)
-                increment = -0.05f;
-            else if (red < 0.0f)
-                increment = 0.05f;
-
-            red += increment * delta_time * 10;
-
-            {
-                static float f = 0.0f;
-                static int counter = 0;
-
-                ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-                ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-                ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-                ImGui::Checkbox("Another Window", &show_another_window);
-
-                ImGui::SliderFloat3("TranslationA", &translationA.x, 0.0f, 960.0f);
-                ImGui::SliderFloat3("TranslationB", &translationB.x, 0.0f, 960.0f);
-                ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-                if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-                    counter++;
-                ImGui::SameLine();
-                ImGui::Text("counter = %d", counter);
-
-                ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-                ImGui::End();
-            }
+            test.OnImGuiRender();
 
 
             // Before we swap the buffers
@@ -233,7 +152,7 @@ int main(void)
             start = end;
         }
 
-        // at the end of this scope, IndexBuffer will be deleted (Stack allocated)
+        // at the end of this scope, IndexBuffer will be deleted (because is Stack allocated)
         // preventing infinit loop of glGetError() 
         // the Buffers can also be heap allocated
     }

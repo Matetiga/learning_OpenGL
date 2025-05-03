@@ -63,7 +63,7 @@ int main(void)
             // the last two values of each row are the texture coordinate (values of 0 to 1.0) 
             // so each corner of the image is directly bound to each corner of the rect
             -50.0f, -50.0f, 0.0f, 0.0f, // bottom left   --- 0 
-            50.0f, -50.0f, 1.0f, 0.0f, // bottom rigth   --- 1
+            50.0f, -50.0f, 1.0f, 0.0f, // bottom right   --- 1
             50.0f, 50.0f, 1.0f, 1.0f,// top right        --- 2
            -50.0f, 50.0f, 0.0f, 1.0f, // top left       --- 3
         };
@@ -111,8 +111,12 @@ int main(void)
         bool show_demo_window = true;        
         ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
         
+        test::Test* currentTest = nullptr;
+        test::TestMenu* testMenu = new test::TestMenu(currentTest);
+        currentTest = testMenu;
 
-        test::TestClearColor test;
+        testMenu->RegisterTest<test::TestClearColor>("Clear Color");
+
 
         // Delta Time
         float delta_time = 0.16666f;
@@ -124,14 +128,28 @@ int main(void)
             /* Render here */
             renderer.Clear();
 
-            test.OnUpdate(0.0f);
-            test.OnRender();         
-
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
 
-            test.OnImGuiRender();
+
+            if (currentTest)
+            {
+                currentTest->OnUpdate(0.0f);
+                currentTest->OnRender();
+                ImGui::Begin("test");
+                // to get back to the menu
+                if (currentTest != testMenu && ImGui::Button("<-"))
+                {
+                    delete currentTest;
+                    currentTest = testMenu;
+                }
+
+                currentTest->OnImGuiRender();
+                ImGui::End();
+            }
+
+
 
 
             // Before we swap the buffers
@@ -155,6 +173,9 @@ int main(void)
         // at the end of this scope, IndexBuffer will be deleted (because is Stack allocated)
         // preventing infinit loop of glGetError() 
         // the Buffers can also be heap allocated
+        delete currentTest;
+        if (currentTest != testMenu)
+            delete testMenu;
     }
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();

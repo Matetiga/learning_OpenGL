@@ -17,12 +17,13 @@
 
 #include "Shader.h"
 
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
+
 #include "tests/TestClearColor.h"
+#include "tests/TestTexture.h"
+
 
 int main(void)
 {
@@ -59,20 +60,6 @@ int main(void)
 
 
     {
-        float position[] = {
-            // the last two values of each row are the texture coordinate (values of 0 to 1.0) 
-            // so each corner of the image is directly bound to each corner of the rect
-            -50.0f, -50.0f, 0.0f, 0.0f, // bottom left   --- 0 
-            50.0f, -50.0f, 1.0f, 0.0f, // bottom right   --- 1
-            50.0f, 50.0f, 1.0f, 1.0f,// top right        --- 2
-           -50.0f, 50.0f, 0.0f, 1.0f, // top left       --- 3
-        };
-
-        // Index Buffer -> to avoid re rendering the same vertex twice
-        unsigned int indices[]{ // ANY INDEX BUFFER must be UNSIGNED
-            0, 1, 2,
-            2, 3, 0
-        };
 
         /* IMPORTANT !!
          OpenGL is a state machine
@@ -116,6 +103,7 @@ int main(void)
         currentTest = testMenu;
 
         testMenu->RegisterTest<test::TestClearColor>("Clear Color");
+        testMenu->RegisterTest<test::TestTexture>("Generate Texture");
 
 
         // Delta Time

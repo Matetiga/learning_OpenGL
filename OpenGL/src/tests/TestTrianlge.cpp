@@ -7,27 +7,33 @@ namespace test
 
 	TestTriangle::TestTriangle()
 		: m_Proj(glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f)), m_View(glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0))),
-		m_translationA(200, 200, 0)
+		m_translationA(400, 200, 0)
 	{
 		float positions[] = {
-			0.0f, 100.0f, // top middle 
-			-50.0f, 0.0f, // bottom left 
-			50.0f, 0.0f   // bottom right
+			// x y Position    // RGBA
+			0.0f, 200.0f,      1.0f, 0.0f, 0.0f, 1.0f,  // top middle 
+			-100.0f, 0.0f,      0.0f, 1.0f, 0.0f, 1.0f,  // bottom left 
+			100.0f, 0.0f,       0.0f, 0.0f, 1.0f, 1.0f    // bottom right
 		};
 
 		unsigned int indices[] = { 0, 1, 2 };
-
+		
 		m_VAO = std::make_unique<VertexArray>();
-		m_VertexBuffer = std::make_unique<VertexBuffer>(positions, 2 * 4 * sizeof(float));
+		m_VertexBuffer = std::make_unique<VertexBuffer>(positions, 6 * 3 * sizeof(float));
 		VertexBufferLayout layout;
 		layout.Push<float>(2);
+		layout.Push<float>(0); // Texture location = 1 in Shader file
+		layout.Push<float>(4); // v_VerColor location = 2
+
 
 		m_VAO->AddBuffer(*m_VertexBuffer, layout);
+
 		m_IndexBuffer = std::make_unique<IndexBuffer>(indices, 3);
 
 		m_Shader = std::make_unique<Shader>("res/shaders/Basic_shader.glsl");
 		m_Shader->Bind();
-		m_Shader->SetUniform4f("u_Color", 1.0, 0.0, 0.0, 1.0);
+		m_Shader->SetUniformBool("u_UseTexture", false);
+		//m_Shader->SetUniform4f("u_Color", 1.0, 0.0, 0.0, 1.0);
 
 		
 	}

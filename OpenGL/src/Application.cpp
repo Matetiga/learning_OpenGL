@@ -23,6 +23,7 @@
 
 #include "tests/TestClearColor.h"
 #include "tests/TestTexture.h"
+#include "tests/TestTriangle.h"
 
 
 int main(void)
@@ -98,12 +99,15 @@ int main(void)
         bool show_demo_window = true;        
         ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
         
+
+        // This works because of c++ polymorphism and because the methods in Test are virtual
         test::Test* currentTest = nullptr;
         test::TestMenu* testMenu = new test::TestMenu(currentTest);
         currentTest = testMenu;
 
         testMenu->RegisterTest<test::TestClearColor>("Clear Color");
         testMenu->RegisterTest<test::TestTexture>("Generate Texture");
+        testMenu->RegisterTest<test::TestTriangle>("Generate Triangle");
 
 
         // Delta Time

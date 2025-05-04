@@ -24,10 +24,18 @@ in vec2 v_TexCoord;
 
 uniform vec4 u_Color;
 uniform sampler2D u_Texture;
+uniform bool u_UseTexture;
 
 void main()  
 {
-    vec4 textColor = texture(u_Texture, v_TexCoord);
-    color = textColor;   // RGBA color 
+    if (u_UseTexture)
+    {
+       
+        color = texture(u_Texture, v_TexCoord);
+    } 
+    else 
+    {
+        color = u_Color;   // RGBA color 
+    }
 
 };

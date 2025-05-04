@@ -39,7 +39,8 @@ namespace test {
 		void RegisterTest(const std::string& name)
 		{
 			std::cout << "Registering Test " << name << std::endl;
-
+			// lambda function creates an instance of the Test
+			// lambda 
 			m_Tests.push_back(std::make_pair(name, []() {return new T(); }));
 		}
 	};

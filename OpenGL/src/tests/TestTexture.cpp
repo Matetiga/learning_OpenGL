@@ -41,9 +41,10 @@ namespace test
 		m_VAO->AddBuffer(*m_VertexBuffer, layout);
 		m_IndexBuffer = std::make_unique<IndexBuffer>(indices, 6);
 
-		m_Shader = std::make_unique<Shader>("res/shaders/Basic.shader");
+		m_Shader = std::make_unique<Shader>("res/shaders/Basic_shader.glsl");
 		m_Shader->Bind();
 		m_Shader->SetUniform4f("u_Color", 0.3, 0.5, 1, 0.8);
+		m_Shader->SetUniformBool("u_UseTexture", true);
 
 		m_Texture = std::make_unique<Texture>("res/textures/nerd.png");
 		m_Shader->SetUniform1i("u_Texture", 0); // Texture is bound to slot 0

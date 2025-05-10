@@ -24,6 +24,7 @@
 #include "tests/TestClearColor.h"
 #include "tests/TestTexture.h"
 #include "tests/TestTriangle.h"
+#include "tests/TestCube.h"
 
 
 int main(void)
@@ -108,6 +109,7 @@ int main(void)
         testMenu->RegisterTest<test::TestClearColor>("Clear Color");
         testMenu->RegisterTest<test::TestTexture>("Generate Texture");
         testMenu->RegisterTest<test::TestTriangle>("Generate Triangle");
+        testMenu->RegisterTest<test::TestCube>("Generate Cube");
 
 
         // Delta Time

@@ -26,7 +26,7 @@ class VertexBufferLayout
 {
 private:
 	std::vector<VertexBufferElement> m_Elements;
-	// Stride is where the next Vertex beggins 
+	// Stride is where the next Vertex begins 
 	unsigned int m_Stride;
 public:
 	VertexBufferLayout():

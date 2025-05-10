@@ -37,7 +37,7 @@ void main()
         vec4 textColor = texture(u_Texture, v_TexCoord);
         color = textColor;
     } 
-    else 
+    else
     {
         color = v_VerColor;   // RGBA color 
     }

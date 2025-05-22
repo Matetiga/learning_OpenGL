@@ -4,6 +4,8 @@
 #include <functional>
 #include <string>
 #include <iostream>
+#include "GL/glew.h"
+#include "GLFW/glfw3.h"
 
 namespace test {
 	class Test
@@ -16,6 +18,7 @@ namespace test {
 		virtual void OnUpdate(float deltatime){}
 		virtual void OnRender(){}
 		virtual void OnImGuiRender(){}
+		virtual void keyCallBack(GLFWwindow *window, int key, int scancode, int action , int mods){}
 	};
 
 

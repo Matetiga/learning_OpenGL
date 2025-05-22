@@ -26,6 +26,18 @@
 #include "tests/TestTriangle.h"
 #include "tests/TestCube.h"
 
+void masterKeyCallBack(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    //std::cout << "master key" << std::endl;
+    test::Test* currentTest = static_cast<test::Test*>(glfwGetWindowUserPointer(window));
+    
+	if (currentTest)
+	{
+        //std::cout << "current test is  not null" << std::endl;
+        currentTest->keyCallBack(window, key, scancode, action, mods);
+	}
+
+}
 
 int main(void)
 {
@@ -34,7 +46,7 @@ int main(void)
     /* Initialize the library */
     if (!glfwInit())
         return -1;
-
+    
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -52,6 +64,7 @@ int main(void)
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // the buffer swap occurs only once per monitor refresh cycle
+    
 
     // this must be called after a creating a valid OpenGL context
     if (glewInit() != GLEW_OK) {
@@ -111,6 +124,8 @@ int main(void)
         testMenu->RegisterTest<test::TestTriangle>("Generate Triangle");
         testMenu->RegisterTest<test::TestCube>("Generate Cube");
 
+        //glfwSetWindowUserPointer(window, currentTest);
+        glfwSetKeyCallback(window, masterKeyCallBack); // for keyboard input
 
         // Delta Time
         float delta_time = 0.16666f;
@@ -129,7 +144,8 @@ int main(void)
 
             if (currentTest)
             {
-                currentTest->OnUpdate(0.0f);
+                glfwSetWindowUserPointer(window, currentTest);
+                currentTest->OnUpdate(delta_time);
                 currentTest->OnRender();
                 ImGui::Begin("test");
                 // to get back to the menu

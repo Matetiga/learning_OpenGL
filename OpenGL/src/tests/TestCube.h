@@ -21,6 +21,7 @@ namespace test {
 		void OnUpdate(float deltatime) override;
 		void OnRender() override;
 		void OnImGuiRender() override;
+		void keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mods) override;
 
 	private:
 		// smart Pointers for this classes, otherwise they will be initialized using the default constructor
@@ -30,8 +31,8 @@ namespace test {
 		std::unique_ptr<Shader> m_Shader;
 		std::unique_ptr<Texture> m_Texture;
 
-		glm::mat4 m_Proj, m_View;
+		glm::mat4 m_Proj;
 		glm::vec3 m_translationA;
-		float m_angleX, m_angleY, m_angleZ;
+		float m_angleX, m_angleY, m_angleZ, m_viewX, m_viewY, m_viewZ, m_scale;
 	};
 }
